@@ -12,3 +12,11 @@ class Normalize(Interface):
         bw_normalize = transforms.Normalize((0.5,), (0.5,))
         rgb_normalize = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         return bw_normalize(bw), rgb_normalize(rgb)
+
+
+if __name__ == "__main__":
+    # python3 -m imcolorize.transforms.tensor_transforms.normalize
+    from ...datasets.stl10 import STL10
+    s = STL10(pil_transforms=[], tensor_transforms=[Normalize()])
+    x = next(iter(s))
+    print(x[0].shape, x[1].shape)

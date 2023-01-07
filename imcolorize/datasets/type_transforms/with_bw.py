@@ -8,5 +8,5 @@ from ...transforms.interface import Interface
 class WithBW(Interface):
     def forward(self, x: Tuple[Image, int]) -> Tuple[Image, Image]:
         rgb, _ = x
-        bw = rgb.convert('1')
+        bw = rgb.convert("1")
         return bw, rgb

@@ -45,7 +45,7 @@ class STL10(DatasetInterface):
         return len(self.dataset)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     s = STL10(pil_transforms=[], tensor_transforms=[])
     print(len(s))
     b, r = next(iter(s))
@@ -53,4 +53,4 @@ if __name__ == '__main__':
     if isinstance(b, Tensor) and isinstance(r, Tensor):
         print(b.shape, r.shape)
     else:
-        print('warn: invalid type')
+        print("warn: invalid type")
