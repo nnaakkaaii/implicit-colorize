@@ -96,7 +96,6 @@ def run(lr: float,
             optimizer.step()
 
             train_losses.append(loss.item())
-            break
 
         scheduler.step()
 
@@ -108,7 +107,6 @@ def run(lr: float,
                 pred = net(bw.to(device))
                 loss = criterion(pred, rgb.to(device))
                 test_losses.append(loss.item())
-                break
 
         train_loss = np.mean(train_losses)
         test_loss = np.mean(test_losses)
