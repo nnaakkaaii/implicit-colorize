@@ -16,7 +16,7 @@ class STL10(DatasetInterface):
         "train": "train+unlabeled",
         "test": "test",
     }
-    
+
     def __init__(self,
                  pil_transforms: List[PilTransformsInterface],
                  tensor_transforms: List[TensorTransformsInterface],
@@ -25,7 +25,7 @@ class STL10(DatasetInterface):
                  ) -> None:
         assert phase in self.PHASES
         super().__init__()
-        
+
         if save_dir is None:
             save_dir = self.DEFAULT_SAVE_DIR
 

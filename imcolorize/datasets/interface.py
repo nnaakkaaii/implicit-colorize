@@ -17,7 +17,7 @@ class Interface(Dataset, metaclass=ABCMeta):
     @abstractmethod
     def __getitem__(self, item: int) -> Tuple[Tensor, Tensor]:
         pass
-    
+
     @abstractmethod
     def __len__(self) -> int:
         pass
