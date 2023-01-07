@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 from torch import Tensor, cat, nn, tensor
 
@@ -6,7 +6,9 @@ from .imnet_block import IMNetBlock
 
 
 class IMNetDecoder(nn.Module):
-    def __init__(self):
+    def __init__(self,
+                 img_size: int = 96,
+                 ) -> None:
         super().__init__()
         self.net = nn.Sequential(
             IMNetBlock(
@@ -29,11 +31,32 @@ class IMNetDecoder(nn.Module):
             nn.GELU(),
             nn.Linear(128, 1),
         )
+        self.img_size = img_size
 
-    def forward(self, x: Tensor, c: Tuple[int, int]) -> Tensor:
-        t_c = tensor(c).repeat(x.size(0), 1)
+    def forward(self,
+                x: Tensor,
+                c: Optional[Tuple[int, int]] = None,
+                ) -> Tensor:
+        bs = x.size(0)
+        
+        if c is None:
+            c = [(i, j)
+                 for i in range(self.img_size)
+                 for j in range(self.img_size)
+                 ]
+            x = x.repeat_interleave(
+                self.img_size * self.img_size,
+                dim=0,
+                )
+
+        t_c = tensor(c).repeat(bs, 1)
         x = cat([x, t_c.to(x)], dim=1)
-        return self.net(x)
+        y = self.net(x)
+
+        if y.size(0) == bs:
+            return y
+        
+        return y.view(bs, self.img_size, self.img_size)
 
 
 if __name__ == "__main__":
@@ -41,5 +64,8 @@ if __name__ == "__main__":
     from torch import randn
 
     net = IMNetDecoder()
-    y = net(randn(16, 128), (1, 2))
-    print(y.shape)
+    pred = net(randn(16, 128), (1, 2))
+    print(pred.shape)
+    
+    pred = net(randn(16, 128))
+    print(pred.shape)
