@@ -51,7 +51,7 @@ class UNetGenerator(nn.Module):
         return self.net(x)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # python3 -m imcolorize.networks.unet_generator
     from torch import randn
 
