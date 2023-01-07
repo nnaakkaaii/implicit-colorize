@@ -20,6 +20,8 @@ from imcolorize.transforms.tensor_transforms.random_flip import RandomFlip
 
 
 def run(lr: float,
+        step_size: int,
+        gamma: float,
         batch_size: int,
         num_epochs: int,
         save_dir: Path,
@@ -67,6 +69,10 @@ def run(lr: float,
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=lr)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
+                                                step_size=step_size,
+                                                gamma=gamma,
+                                                )
 
     with open(save_dir / "result.csv", "a") as f:
         csv.writer(f).writerow([
@@ -90,6 +96,9 @@ def run(lr: float,
             optimizer.step()
 
             train_losses.append(loss.item())
+            break
+
+        scheduler.step()
 
         net.eval()
 
@@ -99,6 +108,7 @@ def run(lr: float,
                 pred = net(bw.to(device))
                 loss = criterion(pred, rgb.to(device))
                 test_losses.append(loss.item())
+                break
 
         train_loss = np.mean(train_losses)
         test_loss = np.mean(test_losses)
@@ -107,7 +117,8 @@ def run(lr: float,
 
         print(f"[Epoch {epoch:04}]: "
               f"train loss {train_loss:.3f} / "
-              f"test loss {test_loss:.3f}")
+              f"test loss {test_loss:.3f} / "
+              f"lr {scheduler.get_last_lr()[0]:.5f}")
 
         with open(save_dir / "result.csv", "a") as f:
             csv.writer(f).writerow([
@@ -134,6 +145,14 @@ if __name__ == "__main__":
     parser.add_argument("--lr",
                         type=float,
                         default=0.01,
+                        )
+    parser.add_argument("--step_size",
+                        type=int,
+                        default=20,
+                        )
+    parser.add_argument("--gamma",
+                        type=float,
+                        default=0.5,
                         )
     parser.add_argument("--batch_size",
                         type=int,
@@ -164,6 +183,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     best = run(args.lr,
+               args.step_size,
+               args.gamma,
                args.batch_size,
                args.num_epochs,
                Path(args.save_dir),
