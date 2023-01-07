@@ -1,5 +1,6 @@
 from torch import Tensor, nn
 
+from .cnn_block import ConvBlock
 from .resnet_block import ResNetBlock
 
 
@@ -9,26 +10,22 @@ class ResNetEncoder(nn.Module):
         super().__init__()
         self.net = nn.Sequential(
             # (16, 48, 48)
-            nn.Conv2d(1, 16, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(16),
+            ConvBlock(1, 16),
             nn.GELU(),
             ResNetBlock(16),
             nn.GELU(),
             # (32, 24, 24)
-            nn.Conv2d(16, 32, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(32),
+            ConvBlock(16, 32),
             nn.GELU(),
             ResNetBlock(32),
             nn.GELU(),
             # (64, 12, 12)
-            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(64),
+            ConvBlock(32, 64),
             nn.GELU(),
             ResNetBlock(64),
             nn.GELU(),
             # (128, 6, 6)
-            nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(128),
+            ConvBlock(64, 128),
             nn.GELU(),
             ResNetBlock(128),
             nn.AvgPool2d(kernel_size=(6, 6)),
