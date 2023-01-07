@@ -50,3 +50,7 @@ if __name__ == '__main__':
     print(len(s))
     b, r = next(iter(s))
     print(type(b), type(r))
+    if isinstance(b, Tensor) and isinstance(r, Tensor):
+        print(b.shape, r.shape)
+    else:
+        print('warn: invalid type')
