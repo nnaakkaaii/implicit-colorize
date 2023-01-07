@@ -1,2 +1,2 @@
-# implicit-coloring
-Implicit Coloring Model
+# implicit-colorize
+Implicit Colorize Model
