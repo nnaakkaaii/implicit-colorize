@@ -29,7 +29,7 @@ class IMNetDecoder(nn.Module):
                 ),
             nn.Linear(256, 128),
             nn.GELU(),
-            nn.Linear(128, 1),
+            nn.Linear(128, 3),
         )
         self.img_size = img_size
 
@@ -56,7 +56,7 @@ class IMNetDecoder(nn.Module):
         if y.size(0) == bs:
             return y
 
-        return y.view(bs, self.img_size, self.img_size)
+        return y.view(bs, -1, self.img_size, self.img_size)
 
 
 if __name__ == "__main__":
