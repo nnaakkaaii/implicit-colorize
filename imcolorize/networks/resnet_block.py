@@ -10,7 +10,7 @@ class ResNetBlock(nn.Module):
             nn.Conv2d(ch, ch, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(ch),
             nn.ReLU(),
-            nn.Conv2d(ch, ch, kernel_size=1, stride=1, padding=1),
+            nn.Conv2d(ch, ch, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(ch),
         )
 

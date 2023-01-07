@@ -31,8 +31,18 @@ class ResNetEncoder(nn.Module):
             nn.BatchNorm2d(128),
             nn.ReLU(),
             ResNetBlock(128),
-            nn.AvgPool2d(kernel_size=(6, 6))
+            nn.AvgPool2d(kernel_size=(6, 6)),
+            nn.Flatten(),
         )
 
     def forward(self, x: Tensor) -> Tensor:
         return self.net(x)
+
+
+if __name__ == "__main__":
+    # python3 -m imcolorize.networks.resnet_encoder
+    from torch import randn
+    
+    net = ResNetEncoder()
+    y = net(randn(16, 1, 96, 96))
+    print(y.shape)
