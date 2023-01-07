@@ -20,3 +20,4 @@ if __name__ == "__main__":
     s = STL10(pil_transforms=[], tensor_transforms=[Normalize()])
     b, r = next(iter(s))
     print(b.shape, r.shape)
+    print(b.min(), b.max(), r.min(), r.max())

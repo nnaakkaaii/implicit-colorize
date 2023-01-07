@@ -9,10 +9,10 @@ class ResNetBlock(nn.Module):
         self.net = nn.Sequential(
             nn.Conv2d(ch, ch, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(ch),
-            nn.ReLU(),
+            nn.GELU(),
             nn.Conv2d(ch, ch, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(ch),
-        )
+            )
 
     def forward(self, x: Tensor) -> Tensor:
         return x + self.net(x)
