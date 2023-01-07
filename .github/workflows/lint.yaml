@@ -32,8 +32,8 @@ jobs:
           architecture: x64
       - name: Checkout Python
         uses: actions/checkout@master
-      - name: Install flake8
-        run: pip install flake8
+      - name: Install isort
+        run: pip install isort
       - name: Run isort
         run: isort --check-only imcolorize/
   mypy:
@@ -46,7 +46,7 @@ jobs:
           architecture: x64
       - name: Checkout Python
         uses: actions/checkout@master
-      - name: Install flake8
-        run: pip install flake8
+      - name: Install mypy
+        run: pip install mypy
       - name: Run isort
         run: mypy imcolorize/
