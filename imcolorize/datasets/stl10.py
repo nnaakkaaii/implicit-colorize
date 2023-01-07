@@ -1,11 +1,13 @@
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
-from torchvision import datasets
 from torch import Tensor
+from torchvision import datasets
 
+from ..transforms.pil_transforms.interface import \
+    Interface as PilTransformsInterface
+from ..transforms.tensor_transforms.interface import \
+    Interface as TensorTransformsInterface
 from .interface import Interface as DatasetInterface
-from ..transforms.pil_transforms.interface import Interface as PilTransformsInterface
-from ..transforms.tensor_transforms.interface import Interface as TensorTransformsInterface
 
 
 class STL10(DatasetInterface):

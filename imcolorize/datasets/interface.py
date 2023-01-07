@@ -1,14 +1,16 @@
-from typing import Tuple, List
 from abc import ABCMeta, abstractmethod
+from typing import List, Tuple
 
-from torch.utils.data import Dataset
 from torch import Tensor
+from torch.utils.data import Dataset
 from torchvision.transforms import Compose
 
-from .type_transforms.with_bw import WithBW
+from ..transforms.pil_transforms.interface import \
+    Interface as PilTransformsInterface
+from ..transforms.tensor_transforms.interface import \
+    Interface as TensorTransformsInterface
 from .type_transforms.to_tensor import ToTensor
-from ..transforms.pil_transforms.interface import Interface as PilTransformsInterface
-from ..transforms.tensor_transforms.interface import Interface as TensorTransformsInterface
+from .type_transforms.with_bw import WithBW
 
 
 class Interface(Dataset, metaclass=ABCMeta):
