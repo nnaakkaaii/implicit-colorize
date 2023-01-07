@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from torchvision import transforms
 from torch import Tensor
+from torchvision import transforms
 from torchvision.transforms import functional as tf
 
 from .interface import Interface
