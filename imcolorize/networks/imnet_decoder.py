@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import List, Optional, Tuple
 
 from torch import Tensor, cat, nn, tensor
 
@@ -35,10 +35,10 @@ class IMNetDecoder(nn.Module):
 
     def forward(self,
                 x: Tensor,
-                c: Optional[Tuple[int, int]] = None,
+                c: Optional[List[Tuple[int, int]]] = None,
                 ) -> Tensor:
         bs = x.size(0)
-        
+
         if c is None:
             c = [(i, j)
                  for i in range(self.img_size)
@@ -55,7 +55,7 @@ class IMNetDecoder(nn.Module):
 
         if y.size(0) == bs:
             return y
-        
+
         return y.view(bs, self.img_size, self.img_size)
 
 
@@ -64,8 +64,8 @@ if __name__ == "__main__":
     from torch import randn
 
     net = IMNetDecoder()
-    pred = net(randn(16, 128), (1, 2))
+    pred = net(randn(16, 128), [(1, 2)])
     print(pred.shape)
-    
+
     pred = net(randn(16, 128))
     print(pred.shape)
