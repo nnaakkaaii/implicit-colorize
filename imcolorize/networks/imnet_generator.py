@@ -1,7 +1,7 @@
-from torch import nn, Tensor
+from torch import Tensor, nn
 
-from .resnet_encoder import ResNetEncoder
 from .imnet_decoder import IMNetDecoder
+from .resnet_encoder import ResNetEncoder
 
 
 class IMNetGenerator(nn.Module):
@@ -9,7 +9,7 @@ class IMNetGenerator(nn.Module):
                  img_size: int = 96,
                  ) -> None:
         super().__init__()
-        
+
         self.encoder = ResNetEncoder()
         self.decoder = IMNetDecoder(img_size)
 
@@ -22,7 +22,7 @@ class IMNetGenerator(nn.Module):
 if __name__ == "__main__":
     # python3 -m imcolorize.networks.imnet_generator
     from torch import randn
-    
+
     net = IMNetGenerator()
     pred = net(randn(16, 1, 96, 96))
     print(pred.shape)
