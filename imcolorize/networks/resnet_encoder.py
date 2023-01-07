@@ -42,7 +42,7 @@ class ResNetEncoder(nn.Module):
 if __name__ == "__main__":
     # python3 -m imcolorize.networks.resnet_encoder
     from torch import randn
-    
+
     net = ResNetEncoder()
     y = net(randn(16, 1, 96, 96))
     print(y.shape)
