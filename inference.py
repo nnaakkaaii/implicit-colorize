@@ -11,16 +11,16 @@ from imcolorize.transforms.tensor_transforms.normalize import Normalize
 
 
 def run(save_dir: Path,
-        network_name: str
+        network_name: str,
+        num_samples: int,
         ) -> None:
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     assert network_name in networks
     net = networks[network_name]()
 
-    ps = list(save_dir.glob("*.pth"))
-    assert len(ps) == 1
-    net.load_state_dict(torch.load(ps[0]))
+    net_path = save_dir / f"net_{network_name}.pth"
+    net.load_state_dict(torch.load(net_path))
 
     if device == "cuda:0":
         net = torch.nn.DataParallel(net)
@@ -40,11 +40,13 @@ def run(save_dir: Path,
     net.eval()
     with torch.no_grad():
         for i, (bw, rgb) in enumerate(tqdm(test_loader)):
+            if i % (len(test_loader) / num_samples) != 0:
+                continue
             pred = net(bw.to(device))
             _, rgb = norm.backward((bw, rgb))
             _, pred = norm.backward((bw, pred))
-            rgb_img = to_pil_image(rgb)
-            pred_img = to_pil_image(pred)
+            rgb_img = to_pil_image(rgb[0])
+            pred_img = to_pil_image(pred[0])
             rgb_img.save(save_dir / f"{i}_t.jpg")
             pred_img.save(save_dir / f"{i}_y.jpg")
 
@@ -62,8 +64,12 @@ if __name__ == "__main__":
                         choices=list(networks.keys()),
                         default="imnet",
                         )
+    parser.add_argument("--num_samples",
+                        type=int,
+                        default=10)
     args = parser.parse_args()
 
     run(Path(args.save_dir),
         args.network_name,
+        args.num_samples,
         )

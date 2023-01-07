@@ -118,7 +118,7 @@ def run(lr: float,
                 ])
 
         if best_test_loss == test_loss:
-            save_path = save_dir / f"net_{epoch}.pth"
+            save_path = save_dir / f"net_{network_name}.pth"
             if isinstance(net, torch.nn.DataParallel):
                 torch.save(net.module.state_dict(), save_path)
             else:
