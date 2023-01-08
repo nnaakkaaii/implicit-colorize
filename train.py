@@ -149,7 +149,7 @@ if __name__ == "__main__":
                         )
     parser.add_argument("--step_size",
                         type=int,
-                        default=20,
+                        default=10,
                         )
     parser.add_argument("--gamma",
                         type=float,

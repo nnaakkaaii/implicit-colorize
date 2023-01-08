@@ -38,8 +38,14 @@ def run(save_dir: Path,
             if i % (len(test_loader) / num_samples) != 0:
                 continue
             pred = model.forward(bw)
-            _, rgb = norm.backward((bw, rgb))
-            _, pred = norm.backward((bw, pred))
+            if pred.size(1) == 1:
+                pred, rgb = norm.backward((pred, rgb))
+            elif pred.size(1) == 3:
+                _, rgb = norm.backward((bw, rgb))
+                _, pred = norm.backward((bw, pred))
+            else:
+                raise NotImplementedError
+            
             rgb_img = to_pil_image(rgb[0])
             pred_img = to_pil_image(pred[0])
             rgb_img.save(save_dir / f"{i}__real.jpg")
