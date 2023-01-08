@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import torch
@@ -21,6 +22,15 @@ class IMNet(EncoderDecoderWrapper):
         self.criterion = nn.MSELoss()
 
         self.encoder.eval()
+
+    def load_state_dict(self, save_dir: Path) -> None:
+        net_encoder_path = save_dir / self.encoder_filename
+        assert os.path.isfile(net_encoder_path)
+        self.encoder.load_state_dict(torch.load(net_encoder_path))
+
+        net_decoder_path = save_dir / self.decoder_filename
+        if os.path.isfile(net_decoder_path):
+            self.decoder.load_state_dict(torch.load(net_decoder_path))
 
     def save_state_dict(self, save_dir: Path) -> None:
         net_decoder_path = save_dir / self.decoder_filename
