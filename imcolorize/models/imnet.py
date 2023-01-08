@@ -5,8 +5,8 @@ import torch
 from torch import Tensor, nn, optim
 from torch.nn import DataParallel
 
+from ..networks.cnn_encoder import CNNEncoder
 from ..networks.imnet_decoder import IMNetDecoder
-from ..networks.resnet_encoder import ResNetEncoder
 from .encoder_decoder_wrapper import EncoderDecoderWrapper
 
 
@@ -17,7 +17,7 @@ class IMNet(EncoderDecoderWrapper):
 
     def __init__(self) -> None:
         super().__init__()
-        self.encoder = ResNetEncoder()
+        self.encoder = CNNEncoder()
         self.decoder = IMNetDecoder()
         self.criterion = nn.MSELoss()
 

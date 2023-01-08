@@ -1,7 +1,7 @@
 from torch import Tensor, nn
 
+from .cnn_encoder import CNNEncoder
 from .imnet_decoder import IMNetDecoder
-from .resnet_encoder import ResNetEncoder
 
 
 class IMNetGenerator(nn.Module):
@@ -10,7 +10,7 @@ class IMNetGenerator(nn.Module):
                  ) -> None:
         super().__init__()
 
-        self.encoder = ResNetEncoder()
+        self.encoder = CNNEncoder()
         self.decoder = IMNetDecoder(img_size)
 
     def forward(self, x: Tensor) -> Tensor:

@@ -63,7 +63,7 @@ class EncoderDecoderWrapper(Interface, metaclass=ABCMeta):
         self.optimizer = optim.Adam([
             {"params": self.encoder.parameters(), "lr": kwargs["encoder_lr"]},
             {"params": self.decoder.parameters(), "lr": kwargs["decoder_lr"]},
-        ])
+            ])
 
     def train(self) -> None:
         self.encoder.train()

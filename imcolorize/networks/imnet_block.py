@@ -13,7 +13,7 @@ class IMNetBlock(nn.Module):
         super().__init__()
         self.linear = nn.Sequential(
             nn.Linear(in_dim, out_dim - org_dim),
-            nn.GELU(),
+            nn.ReLU(),
             )
         self.inner = inner
 

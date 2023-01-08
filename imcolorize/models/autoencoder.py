@@ -1,7 +1,7 @@
 from torch import Tensor, nn
 
 from ..networks.cnn_decoder import CNNDecoder
-from ..networks.resnet_encoder import ResNetEncoder
+from ..networks.cnn_encoder import CNNEncoder
 from .encoder_decoder_wrapper import EncoderDecoderWrapper
 
 
@@ -11,7 +11,7 @@ class AutoEncoder(EncoderDecoderWrapper):
 
     def __init__(self) -> None:
         super().__init__()
-        self.encoder = ResNetEncoder()
+        self.encoder = CNNEncoder()
         self.decoder = CNNDecoder()
         self.criterion = nn.MSELoss()
 

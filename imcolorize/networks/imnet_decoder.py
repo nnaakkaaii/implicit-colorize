@@ -28,9 +28,10 @@ class IMNetDecoder(nn.Module):
                     ),
                 ),
             nn.Linear(256, 128),
-            nn.GELU(),
+            nn.ReLU(),
             nn.Linear(128, 3),
-        )
+            nn.Sigmoid(),
+            )
         self.img_size = img_size
 
     def forward(self,

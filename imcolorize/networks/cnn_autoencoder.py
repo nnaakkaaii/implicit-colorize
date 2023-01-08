@@ -1,7 +1,7 @@
 from torch import Tensor, nn
 
 from .cnn_decoder import CNNDecoder
-from .resnet_encoder import ResNetEncoder
+from .cnn_encoder import CNNEncoder
 
 
 class CNNAutoEncoder(nn.Module):
@@ -9,9 +9,9 @@ class CNNAutoEncoder(nn.Module):
         super().__init__()
 
         self.net = nn.Sequential(
-            ResNetEncoder(),
+            CNNEncoder(),
             CNNDecoder(),
-        )
+            )
 
     def forward(self, x: Tensor) -> Tensor:
         return self.net(x)
