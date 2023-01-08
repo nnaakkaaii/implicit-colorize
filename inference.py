@@ -6,26 +6,21 @@ from torchvision.transforms.functional import to_pil_image
 from tqdm import tqdm
 
 from imcolorize.datasets.stl10 import STL10
-from imcolorize.networks import networks
+from imcolorize.models import models
 from imcolorize.transforms.tensor_transforms.normalize import Normalize
 
 
 def run(save_dir: Path,
-        network_name: str,
+        model_name: str,
         num_samples: int,
         ) -> None:
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    assert network_name in networks
-    net = networks[network_name]()
+    assert model_name in models
+    model = models[model_name]()
 
-    net_path = save_dir / f"net_{network_name}.pth"
-    net.load_state_dict(torch.load(net_path))
-
-    if device == "cuda:0":
-        net = torch.nn.DataParallel(net)
-        net.to(device)
-        torch.backends.cudnn.benchmark = True
+    model.load_state_dict(save_dir)
+    model.to(device)
 
     norm = Normalize()
     test_set = STL10(pil_transforms=[],
@@ -37,18 +32,18 @@ def run(save_dir: Path,
                              shuffle=False,
                              )
 
-    net.eval()
+    model.eval()
     with torch.no_grad():
         for i, (bw, rgb) in enumerate(tqdm(test_loader)):
             if i % (len(test_loader) / num_samples) != 0:
                 continue
-            pred = net(bw.to(device))
+            pred = model.forward(bw)
             _, rgb = norm.backward((bw, rgb))
             _, pred = norm.backward((bw, pred))
             rgb_img = to_pil_image(rgb[0])
             pred_img = to_pil_image(pred[0])
-            rgb_img.save(save_dir / f"{i}_t.jpg")
-            pred_img.save(save_dir / f"{i}_y.jpg")
+            rgb_img.save(save_dir / f"{i}__real.jpg")
+            pred_img.save(save_dir / f"{i}_{model_name}.jpg")
 
 
 if __name__ == "__main__":
@@ -59,9 +54,9 @@ if __name__ == "__main__":
                         type=str,
                         default="results/test01",
                         )
-    parser.add_argument("--network_name",
+    parser.add_argument("--model_name",
                         type=str,
-                        choices=list(networks.keys()),
+                        choices=list(models.keys()),
                         default="imnet",
                         )
     parser.add_argument("--num_samples",
@@ -70,6 +65,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run(Path(args.save_dir),
-        args.network_name,
+        args.model_name,
         args.num_samples,
         )

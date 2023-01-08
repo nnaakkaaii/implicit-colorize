@@ -6,12 +6,11 @@ from typing import List
 
 import numpy as np
 import torch
-from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from imcolorize.datasets.stl10 import STL10
-from imcolorize.networks import networks
+from imcolorize.models import models
 from imcolorize.transforms.tensor_transforms.interface import Interface
 from imcolorize.transforms.tensor_transforms.normalize import Normalize
 from imcolorize.transforms.tensor_transforms.random_affine import RandomAffine
@@ -20,12 +19,14 @@ from imcolorize.transforms.tensor_transforms.random_flip import RandomFlip
 
 
 def run(lr: float,
+        encoder_lr: float,
+        decoder_lr: float,
         step_size: int,
         gamma: float,
         batch_size: int,
         num_epochs: int,
         save_dir: Path,
-        network_name: str,
+        model_name: str,
         use_random_crop: bool,
         use_random_flip: bool,
         use_random_affine: bool,
@@ -33,12 +34,10 @@ def run(lr: float,
     os.makedirs(save_dir, exist_ok=True)
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-    assert network_name in networks
-    net = networks[network_name]()
-    if device == "cuda:0":
-        net = torch.nn.DataParallel(net)
-        net.to(device)
-        torch.backends.cudnn.benchmark = True
+    assert model_name in models
+    model = models[model_name]()
+    model.load_state_dict(save_dir)
+    model.to(device)
 
     tensor_transformers: List[Interface] = []
     if use_random_flip:
@@ -67,12 +66,16 @@ def run(lr: float,
                              shuffle=False,
                              )
 
-    criterion = nn.MSELoss()
-    optimizer = torch.optim.Adam(net.parameters(), lr=lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
-                                                step_size=step_size,
-                                                gamma=gamma,
-                                                )
+    model.set_optim(
+        lr=lr,
+        encoder_lr=encoder_lr,
+        decoder_lr=decoder_lr,
+        )
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        model.optimizer,
+        step_size=step_size,
+        gamma=gamma,
+        )
 
     with open(save_dir / "result.csv", "a") as f:
         csv.writer(f).writerow([
@@ -85,28 +88,24 @@ def run(lr: float,
     best_test_loss = 1e8
 
     for epoch in range(1, num_epochs + 1):
-        net.train()
+        model.train()
 
         train_losses = []
         for bw, rgb in tqdm(train_loader):
-            pred = net(bw.to(device))
-            optimizer.zero_grad()
-            loss = criterion(pred, rgb.to(device))
-            loss.backward()
-            optimizer.step()
-
-            train_losses.append(loss.item())
+            model.forward(bw)
+            loss = model.backward(rgb)
+            train_losses.append(loss)
 
         scheduler.step()
 
-        net.eval()
+        model.eval()
 
         test_losses = []
         with torch.no_grad():
             for bw, rgb in tqdm(test_loader):
-                pred = net(bw.to(device))
-                loss = criterion(pred, rgb.to(device))
-                test_losses.append(loss.item())
+                model.forward(bw)
+                loss = model.backward(rgb)
+                test_losses.append(loss)
 
         train_loss = np.mean(train_losses)
         test_loss = np.mean(test_losses)
@@ -127,11 +126,7 @@ def run(lr: float,
                 ])
 
         if best_test_loss == test_loss:
-            save_path = save_dir / f"net_{network_name}.pth"
-            if isinstance(net, torch.nn.DataParallel):
-                torch.save(net.module.state_dict(), save_path)
-            else:
-                torch.save(net.state_dict(), save_path)
+            model.save_state_dict(save_dir)
 
     return best_test_loss
 
@@ -141,6 +136,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--lr",
+                        type=float,
+                        default=0.01,
+                        )
+    parser.add_argument("--encoder_lr",
+                        type=float,
+                        default=0.01,
+                        )
+    parser.add_argument("--decoder_lr",
                         type=float,
                         default=0.01,
                         )
@@ -164,9 +167,9 @@ if __name__ == "__main__":
                         type=str,
                         default="results/test01",
                         )
-    parser.add_argument("--network_name",
+    parser.add_argument("--model_name",
                         type=str,
-                        choices=list(networks.keys()),
+                        choices=list(models.keys()),
                         default="imnet",
                         )
     parser.add_argument("--use_random_crop",
@@ -181,12 +184,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     best = run(args.lr,
+               args.encoder_lr,
+               args.decoder_lr,
                args.step_size,
                args.gamma,
                args.batch_size,
                args.num_epochs,
                Path(args.save_dir),
-               args.network_name,
+               args.model_name,
                args.use_random_crop,
                args.use_random_flip,
                args.use_random_affine,
