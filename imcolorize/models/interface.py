@@ -31,6 +31,10 @@ class Interface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def loss(self, t: Tensor) -> Tensor:
+        pass
+
+    @abstractmethod
     def backward(self, t: Tensor) -> float:
         pass
 

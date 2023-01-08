@@ -104,11 +104,11 @@ def run(lr: float,
         with torch.no_grad():
             for bw, rgb in tqdm(test_loader):
                 model.forward(bw)
-                loss = model.backward(rgb)
+                loss = model.loss(rgb).item()
                 test_losses.append(loss)
 
-        train_loss = np.mean(train_losses)
-        test_loss = np.mean(test_losses)
+        train_loss = float(np.mean(train_losses))
+        test_loss = float(np.mean(test_losses))
 
         best_test_loss = min(test_loss, best_test_loss)
 

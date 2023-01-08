@@ -46,9 +46,12 @@ class UNet(Interface):
         assert "lr" in kwargs
         self.optimizer = optim.Adam(self.net.parameters(), lr=kwargs["lr"])
 
+    def loss(self, t: Tensor) -> Tensor:
+        return self.criterion(self.y, t.to(self.device))
+
     def backward(self, t: Tensor) -> float:
         self.optimizer.zero_grad()
-        loss = self.criterion(self.y, t.to(self.device))
+        loss = self.loss(t)
         loss.backward()
         self.optimizer.step()
         return loss.item()
