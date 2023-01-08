@@ -30,7 +30,7 @@ class IMNetDecoder(nn.Module):
             nn.Linear(256, 128),
             nn.ReLU(),
             nn.Linear(128, 3),
-            nn.Tanh(),
+            # nn.Tanh(),
             )
         self.img_size = img_size
 
