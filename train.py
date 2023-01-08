@@ -137,15 +137,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--lr",
                         type=float,
-                        default=0.001,
+                        default=0.01,
                         )
     parser.add_argument("--encoder_lr",
                         type=float,
-                        default=0.001,
+                        default=0.01,
                         )
     parser.add_argument("--decoder_lr",
                         type=float,
-                        default=0.001,
+                        default=0.01,
                         )
     parser.add_argument("--step_size",
                         type=int,

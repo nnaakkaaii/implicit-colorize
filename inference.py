@@ -45,7 +45,7 @@ def run(save_dir: Path,
                 _, pred = norm.backward((bw, pred))
             else:
                 raise NotImplementedError
-            
+
             rgb_img = to_pil_image(rgb[0])
             pred_img = to_pil_image(pred[0])
             rgb_img.save(save_dir / f"{i}__real.jpg")
