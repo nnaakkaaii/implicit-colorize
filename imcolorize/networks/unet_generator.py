@@ -72,7 +72,7 @@ class UNetGenerator(nn.Module):
                 )),
             # (16, 96, 96)
             ConvBlock(16, 8),
-            nn.Conv2d(8, 1, kernel_size=1),
+            nn.Conv2d(8, 3, kernel_size=1),
             nn.Sigmoid(),
             )
 
