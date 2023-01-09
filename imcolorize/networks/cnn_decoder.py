@@ -27,7 +27,7 @@ class CNNDecoder(nn.Module):
             # (dim // 16, 96, 96)
             ConvBlock(dim // 16, dim // 16),
             nn.Conv2d(dim // 16, 1, kernel_size=1),
-            # nn.Tanh(),
+            nn.Tanh(),
             )
 
     def forward(self, x: Tensor) -> Tensor:
