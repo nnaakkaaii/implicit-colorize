@@ -41,7 +41,7 @@ class IMNetDecoder(nn.Module):
         bs = x.size(0)
 
         if c is None:
-            c = [(i, j)
+            c = [(i / self.img_size, j / self.img_size)
                  for i in range(self.img_size)
                  for j in range(self.img_size)
                  ]
