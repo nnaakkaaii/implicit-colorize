@@ -5,27 +5,28 @@ from .utils import Reshape
 
 
 class CNNDecoder(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, dim: int = 256) -> None:
         super().__init__()
+        assert dim % 16 == 0
         self.net = nn.Sequential(
-            # (128,)
-            nn.Linear(128, 128 * 6 * 6),
-            # (128 * 6 * 6,)
-            Reshape(128, 6, 6),
-            # (128, 6, 6)
-            nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2),
-            # (64, 12, 12)
-            ConvBlock(64, 64),
-            nn.ConvTranspose2d(64, 32, kernel_size=2, stride=2),
-            # (32, 24, 24)
-            ConvBlock(32, 32),
-            nn.ConvTranspose2d(32, 16, kernel_size=2, stride=2),
-            # (16, 48, 48)
-            ConvBlock(16, 16),
-            nn.ConvTranspose2d(16, 8, kernel_size=2, stride=2),
-            # (8, 96, 96)
-            ConvBlock(8, 8),
-            nn.Conv2d(8, 1, kernel_size=1),
+            # (256,)
+            nn.Linear(dim, dim * 6 * 6),
+            # (dim * 6 * 6,)
+            Reshape(dim, 6, 6),
+            # (dim, 6, 6)
+            nn.ConvTranspose2d(dim, dim // 2, kernel_size=2, stride=2),
+            # (dim // 2, 12, 12)
+            ConvBlock(dim // 2, dim // 2),
+            nn.ConvTranspose2d(dim // 2, dim // 4, kernel_size=2, stride=2),
+            # (dim // 4, 24, 24)
+            ConvBlock(dim // 4, dim // 4),
+            nn.ConvTranspose2d(dim // 4, dim // 8, kernel_size=2, stride=2),
+            # (dim // 8, 48, 48)
+            ConvBlock(dim // 8, dim // 8),
+            nn.ConvTranspose2d(dim // 8, dim // 16, kernel_size=2, stride=2),
+            # (dim // 16, 96, 96)
+            ConvBlock(dim // 16, dim // 16),
+            nn.Conv2d(dim // 16, 1, kernel_size=1),
             # nn.Tanh(),
             )
 
@@ -38,5 +39,5 @@ if __name__ == "__main__":
     from torch import randn
 
     net = CNNDecoder()
-    y = net(randn(16, 128))
+    y = net(randn(16, 256))
     print(y.shape)

@@ -11,11 +11,7 @@ from tqdm import tqdm
 
 from imcolorize.datasets.stl10 import STL10
 from imcolorize.models import models
-from imcolorize.transforms.pil_transforms.interface import \
-    Interface as PilTransformInterface
-from imcolorize.transforms.pil_transforms.rgb2ycbcr import RGB2YCbCr
-from imcolorize.transforms.tensor_transforms.interface import \
-    Interface as TensorTransformInterface
+from imcolorize.transforms.tensor_transforms.interface import Interface
 from imcolorize.transforms.tensor_transforms.normalize import Normalize
 from imcolorize.transforms.tensor_transforms.random_affine import RandomAffine
 from imcolorize.transforms.tensor_transforms.random_crop import RandomCrop
@@ -43,11 +39,7 @@ def run(lr: float,
     model.load_state_dict(save_dir)
     model.to(device)
 
-    pil_transformers: List[PilTransformInterface] = []
-    if model_name == "imnet":
-        pil_transformers.append(RGB2YCbCr())
-
-    tensor_transformers: List[TensorTransformInterface] = []
+    tensor_transformers: List[Interface] = []
     if use_random_flip:
         tensor_transformers.append(RandomFlip())
     if use_random_crop:
@@ -56,11 +48,11 @@ def run(lr: float,
         tensor_transformers.append(RandomAffine())
     tensor_transformers.append(Normalize())
 
-    train_set = STL10(pil_transforms=pil_transformers,
+    train_set = STL10(pil_transforms=[],
                       tensor_transforms=tensor_transformers,
                       phase="train",
                       )
-    test_set = STL10(pil_transforms=pil_transformers,
+    test_set = STL10(pil_transforms=[],
                      tensor_transforms=[Normalize()],
                      phase="test",
                      )
@@ -103,6 +95,7 @@ def run(lr: float,
             model.forward(bw)
             loss = model.backward(rgb)
             train_losses.append(loss)
+            break
 
         scheduler.step()
 

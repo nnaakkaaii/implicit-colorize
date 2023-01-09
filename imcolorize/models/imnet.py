@@ -40,8 +40,6 @@ class IMNet(EncoderDecoderWrapper):
             torch.save(self.decoder.state_dict(), net_decoder_path)
 
     def loss(self, t: Tensor) -> Tensor:
-        if self.y.size(1) == 2:
-            return self.criterion(self.y, t[:, 1:, :, :].to(self.device))
         return self.criterion(self.y, t.to(self.device))
 
     def forward(self, x: Tensor) -> Tensor:
