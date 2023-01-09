@@ -8,28 +8,29 @@ from .imnet_block import IMNetBlock
 class IMNetDecoder(nn.Module):
     def __init__(self,
                  img_size: int = 96,
+                 dim: int = 256,
                  ) -> None:
         super().__init__()
         self.net = nn.Sequential(
             IMNetBlock(
-                512,
-                256,
+                dim * 4,
+                dim * 2,
                 IMNetBlock(
-                    1024,
-                    512,
+                    dim * 8,
+                    dim * 4,
                     IMNetBlock(
-                        2048,
-                        1024,
+                        dim * 16,
+                        dim * 8,
                         IMNetBlock(
-                            130,
-                            2048,
+                            dim + 2,
+                            dim * 16,
                             ),
                         ),
                     ),
                 ),
-            nn.Linear(256, 128),
+            nn.Linear(dim * 2, dim),
             nn.ReLU(),
-            nn.Linear(128, 3),
+            nn.Linear(dim, 3),
             # nn.Tanh(),
             )
         self.img_size = img_size
@@ -65,8 +66,8 @@ if __name__ == "__main__":
     from torch import randn
 
     net = IMNetDecoder()
-    pred = net(randn(16, 128), [(1, 2)])
+    pred = net(randn(16, 256), [(1, 2)])
     print(pred.shape)
 
-    pred = net(randn(16, 128))
+    pred = net(randn(16, 256))
     print(pred.shape)

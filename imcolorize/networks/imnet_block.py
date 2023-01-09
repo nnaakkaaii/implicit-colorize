@@ -8,7 +8,7 @@ class IMNetBlock(nn.Module):
                  in_dim: int,
                  out_dim: int,
                  inner: Optional[nn.Module] = None,
-                 org_dim: int = 130,
+                 org_dim: int = 258,
                  ) -> None:
         super().__init__()
         self.linear = nn.Sequential(
@@ -26,21 +26,22 @@ class IMNetBlock(nn.Module):
 if __name__ == "__main__":
     from torch import randn
 
+    dim = 256
     net = IMNetBlock(
-        512,
-        256,
+        dim * 4,
+        dim * 2,
         IMNetBlock(
-            1024,
-            512,
+            dim * 8,
+            dim * 4,
             IMNetBlock(
-                2048,
-                1024,
+                dim * 16,
+                dim * 8,
                 IMNetBlock(
-                    130,
-                    2048,
+                    dim + 2,
+                    dim * 16,
                     ),
                 ),
             ),
         )
-    y = net(randn(16, 130))
+    y = net(randn(16, dim + 2))
     print(y.shape)
