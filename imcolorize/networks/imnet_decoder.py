@@ -36,7 +36,7 @@ class IMNetDecoder(nn.Module):
 
     def forward(self,
                 x: Tensor,
-                c: Optional[List[Tuple[int, int]]] = None,
+                c: Optional[List[Tuple[float, float]]] = None,
                 ) -> Tensor:
         bs = x.size(0)
 
