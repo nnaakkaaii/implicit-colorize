@@ -34,8 +34,23 @@ class Normalize(Interface):
 if __name__ == "__main__":
     # python3 -m imcolorize.transforms.tensor_transforms.normalize
     from ...datasets.stl10 import STL10
-    s = STL10(pil_transforms=[], tensor_transforms=[Normalize()])
+    s = STL10(pil_transforms=[], tensor_transforms=[])
     b, r = next(iter(s))
+    print(b.shape, r.shape)
+    print(b.min(), b.max(), r.min(), r.max())
+    b, r = Normalize().forward((b, r))
+    print(b.shape, r.shape)
+    print(b.min(), b.max(), r.min(), r.max())
+    b, r = Normalize().backward((b, r))
+    print(b.shape, r.shape)
+    print(b.min(), b.max(), r.min(), r.max())
+
+    from ...transforms.pil_transforms.rgb2ycbcr import RGB2YCbCr
+    s = STL10(pil_transforms=[RGB2YCbCr()], tensor_transforms=[])
+    b, r = next(iter(s))
+    print(b.shape, r.shape)
+    print(b.min(), b.max(), r.min(), r.max())
+    b, r = Normalize().forward((b, r))
     print(b.shape, r.shape)
     print(b.min(), b.max(), r.min(), r.max())
     b, r = Normalize().backward((b, r))
