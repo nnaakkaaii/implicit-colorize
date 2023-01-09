@@ -95,7 +95,6 @@ def run(lr: float,
             model.forward(bw)
             loss = model.backward(rgb)
             train_losses.append(loss)
-            break
 
         scheduler.step()
 
