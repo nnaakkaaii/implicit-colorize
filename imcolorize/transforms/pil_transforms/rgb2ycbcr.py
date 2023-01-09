@@ -18,7 +18,7 @@ class RGB2YCbCr(Interface):
 
 
 if __name__ == "__main__":
-    # python3 -m imcolorize.transforms.pil_transforms.rgb2ycrcb
+    # python3 -m imcolorize.transforms.pil_transforms.rgb2ycbcr
     from ...datasets.stl10 import STL10
     s = STL10(pil_transforms=[RGB2YCbCr()], tensor_transforms=[])
     b, r = next(iter(s))
